@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <title>Dcars – תחזוקה</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 800px; margin: 2rem auto; }
+    label { display:block; margin:.5rem 0 .25rem; }
+    input { width: 100%; padding:.5rem; }
+    button { margin-right:.5rem; padding:.5rem 1rem; }
+    pre { background:#111; color:#0f0; padding:1rem; overflow:auto; }
+    .row { display:flex; gap:1rem; }
+    .col { flex:1; }
+    fieldset { margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <h1>Dcars – ממשק בדיקה</h1>
+
+  <fieldset>
+    <legend>Vehicle</legend>
+    <label>Vehicle ID</label>
+    <input id="vehicle_id" placeholder="ABC-123"/>
+    <label>Mileage (km)</label>
+    <input id="mileage" type="number" min="0" value="45000"/>
+    <div style="margin-top:.5rem">
+      <button id="btnDue">GET /maintenance/due</button>
+      <button id="btnFull">GET /maintenance/full</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Upsert (אופציונלי)</legend>
+    <div class="row">
+      <div class="col">
+        <label>avg_monthly_km</label>
+        <input id="avg_monthly_km" type="number" min="0" placeholder="e.g. 1200"/>
+      </div>
+    </div>
+    <div>
+      <button id="btnUpsert">POST /vehicles/upsert</button>
+    </div>
+  </fieldset>
+
+  <h3>Result</h3>
+  <pre id="out">{}</pre>
+
+  <script>
+    const out = document.getElementById('out');
+    function show(o){ out.textContent = JSON.stringify(o, null, 2); }
+
+    async function getJSON(url){
+      const res = await fetch(url);
+      return res.json();
+    }
+    async function postJSON(url, body){
+      const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      return res.json();
+    }
+
+    document.getElementById('btnDue').onclick = async () => {
+      const vid = document.getElementById('vehicle_id').value.trim();
+      const mileage = document.getElementById('mileage').value;
+      const url = `/maintenance/due?vehicle_id=${encodeURIComponent(vid)}&mileage=${encodeURIComponent(mileage)}`;
+      show(await getJSON(url));
+    };
+
+    document.getElementById('btnFull').onclick = async () => {
+      const vid = document.getElementById('vehicle_id').value.trim();
+      const mileage = document.getElementById('mileage').value;
+      const url = `/maintenance/full?vehicle_id=${encodeURIComponent(vid)}&mileage=${encodeURIComponent(mileage)}`;
+      show(await getJSON(url));
+    };
+
+    document.getElementById('btnUpsert').onclick = async () => {
+      const vid = document.getElementById('vehicle_id').value.trim();
+      const mileage = Number(document.getElementById('mileage').value);
+      const avg = document.getElementById('avg_monthly_km').value;
+      const payload = { vehicle_id: vid, mileage, avg_monthly_km: avg ? Number(avg) : null };
+      show(await postJSON('/vehicles/upsert', payload));
+    };
+  </script>
+</body>
+</html>
