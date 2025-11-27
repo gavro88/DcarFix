@@ -1,84 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
-<head>
-  <meta charset="utf-8"/>
-  <title>Dcars – תחזוקה</title>
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 800px; margin: 2rem auto; }
-    label { display:block; margin:.5rem 0 .25rem; }
-    input { width: 100%; padding:.5rem; }
-    button { margin-right:.5rem; padding:.5rem 1rem; }
-    pre { background:#111; color:#0f0; padding:1rem; overflow:auto; }
-    .row { display:flex; gap:1rem; }
-    .col { flex:1; }
-    fieldset { margin-top:1rem; }
-  </style>
-</head>
-<body>
-  <h1>Dcars – ממשק בדיקה</h1>
+  <head>
+    <meta charset="utf-8" />
+    <title>DcarFix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <fieldset>
-    <legend>Vehicle</legend>
-    <label>Vehicle ID</label>
-    <input id="vehicle_id" placeholder="ABC-123"/>
-    <label>Mileage (km)</label>
-    <input id="mileage" type="number" min="0" value="45000"/>
-    <div style="margin-top:.5rem">
-      <button id="btnDue">GET /maintenance/due</button>
-      <button id="btnFull">GET /maintenance/full</button>
+    <!-- Redirect מידי ל-CarFix -->
+    <meta http-equiv="refresh" content="0;URL='https://carfix.abacusai.app/'" />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .card {
+        background: #020617;
+        border-radius: 16px;
+        padding: 24px 28px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.8);
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        margin: 0.35rem 0;
+        color: #cbd5f5;
+      }
+      a {
+        color: #38bdf8;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .spinner {
+        margin: 16px auto 8px;
+        border: 3px solid rgba(148, 163, 184, 0.35);
+        border-top-color: #38bdf8;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        animation: spin 0.75s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>DcarFix מועבר ל־CarFix</h1>
+      <div class="spinner"></div>
+      <p>מעביר אותך אל הממשק המלא של האפליקציה…</p>
+      <p>
+        אם לא קרתה הפניה תוך כמה שניות,
+        <a href="https://carfix.abacusai.app/">לחץ כאן לפתיחה ידנית</a>.
+      </p>
     </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Upsert (אופציונלי)</legend>
-    <div class="row">
-      <div class="col">
-        <label>avg_monthly_km</label>
-        <input id="avg_monthly_km" type="number" min="0" placeholder="e.g. 1200"/>
-      </div>
-    </div>
-    <div>
-      <button id="btnUpsert">POST /vehicles/upsert</button>
-    </div>
-  </fieldset>
-
-  <h3>Result</h3>
-  <pre id="out">{}</pre>
-
-  <script>
-    const out = document.getElementById('out');
-    function show(o){ out.textContent = JSON.stringify(o, null, 2); }
-
-    async function getJSON(url){
-      const res = await fetch(url);
-      return res.json();
-    }
-    async function postJSON(url, body){
-      const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
-      return res.json();
-    }
-
-    document.getElementById('btnDue').onclick = async () => {
-      const vid = document.getElementById('vehicle_id').value.trim();
-      const mileage = document.getElementById('mileage').value;
-      const url = `/maintenance/due?vehicle_id=${encodeURIComponent(vid)}&mileage=${encodeURIComponent(mileage)}`;
-      show(await getJSON(url));
-    };
-
-    document.getElementById('btnFull').onclick = async () => {
-      const vid = document.getElementById('vehicle_id').value.trim();
-      const mileage = document.getElementById('mileage').value;
-      const url = `/maintenance/full?vehicle_id=${encodeURIComponent(vid)}&mileage=${encodeURIComponent(mileage)}`;
-      show(await getJSON(url));
-    };
-
-    document.getElementById('btnUpsert').onclick = async () => {
-      const vid = document.getElementById('vehicle_id').value.trim();
-      const mileage = Number(document.getElementById('mileage').value);
-      const avg = document.getElementById('avg_monthly_km').value;
-      const payload = { vehicle_id: vid, mileage, avg_monthly_km: avg ? Number(avg) : null };
-      show(await postJSON('/vehicles/upsert', payload));
-    };
-  </script>
-</body>
+  </body>
 </html>
